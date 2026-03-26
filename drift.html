@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Found Signal — A Found Poetry Machine</title>
+  <title>Found Signal — A Found Poetry Drift Machine</title>
   <meta name="description" content="A found poetry machine built from Project Hail Mary by Andy Weir. Select words, build a poem, add your voice to the wall.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -300,13 +300,12 @@
   ══════════════════════════════════════ -->
   <div class="page" id="page-wall">
     <div class="wall-header">
-      <div class="wall-title">Found <span>Signal</span></div>
+      <div class="wall-title">Found <span>Drift</span></div>
       <div class="wall-count" id="wallCount"></div>
       <button class="wall-back" onclick="showPage('entry')">← back to entry</button>
     </div>
     <div class="wall-source-bar">
-      All poems found within: Weir, A. (2021). <em>Project Hail Mary.</em> Ballantine Books. p. 47. — words selected by readers, arrangements their own.
-    </div>
+All poems, shifting in structure — the signal rearranged. What was written remains, but not in the same order.    </div>
     <div class="wall-body">
       <div class="wall-toolbar">
         <button class="btn-ghost" onclick="loadWall()">↻ refresh wall</button>
@@ -535,7 +534,32 @@
     function fmtDate(ts) {
       return new Date(ts).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' });
     }
+function driftText(text) {
+  let lines = text.split("\n");
 
+  // shuffle line order
+  for (let i = lines.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [lines[i], lines[j]] = [lines[j], lines[i]];
+  }
+
+  // lightly disturb each line
+  lines = lines.map(line => {
+    let words = line.split(" ");
+
+    // only shift if line has enough words
+    if (words.length > 4) {
+      // swap two random words
+      let i = Math.floor(Math.random() * words.length);
+      let j = Math.floor(Math.random() * words.length);
+      [words[i], words[j]] = [words[j], words[i]];
+    }
+
+    return words.join(" ");
+  });
+
+  return lines.join("\n");
+}
     function shuffle(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -579,8 +603,8 @@
         const card = document.createElement('div');
         card.className = 'wall-card';
         card.innerHTML = `
-          <div class="wall-card-poem">${esc(p.text)}</div>
-          <div class="wall-card-footer">
+<div class="wall-card-poem">${driftText(esc(p.text))}</div>
+<div class="wall-card-footer">
             <span class="wall-card-author">— ${esc(p.author || 'Anonymous')}</span>
             <span class="wall-card-date">${fmtDate(p.created_at)}</span>
           </div>`;
