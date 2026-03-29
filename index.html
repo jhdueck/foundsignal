@@ -1,136 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Signal Poems</title>
+  <meta charset="UTF-8">
+  <title>Poetry Wall — Signal</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    :root {
-      --bg: #fefefe;
-      --text: #222;
-      --text2: #555;
-      --text3: #888;
-      --accent: #0077cc;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    header {
+    /* optional inline splash styling for Signal */
+    .splash.signal {
+      background-color: #f0f0f0;
+      padding: 2rem;
       text-align: center;
-      padding: 2rem 1rem 1rem;
     }
-
-    header h1 {
-      margin: 0;
+    .splash.signal h1 {
+      margin: 0 0 1rem 0;
       font-size: 3rem;
     }
-
-    header .subline {
-      font-size: 0.9rem;
-      color: var(--text3);
-      font-style: italic;
-      margin-top: 0.5rem;
-    }
-
-    .mode-nav {
-      font-size: 0.85rem;
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-
-    .mode-nav a {
-      color: var(--accent);
-      text-decoration: none;
-      margin: 0 0.5rem;
-    }
-
-    .wall {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 1rem;
-      padding: 1rem 2rem;
-    }
-
-    .wall-card {
-      background: #fff;
-      border: 1px solid #eee;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-
-    .wall-card-poem {
-      margin: 0;
-      white-space: pre-line;
-      line-height: 1.5;
-    }
-
-    .author {
-      font-size: 0.85rem;
-      text-align: right;
-      color: var(--text2);
-      margin-top: 0.5rem;
-    }
-
-    .machine-instruction {
-      font-size: 0.9rem;
-      color: var(--text3);
-      margin-top: 1rem;
-      text-align: center;
-      font-style: italic;
+    .splash.signal p {
+      font-size: 1.2rem;
+      color: #333;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Signal Poems</h1>
-    <div class="subline">original poems — structured and complete</div>
-    <div class="mode-nav">
-      viewing mode:
-      <a href="index.html">signal</a> ·
-      <a href="noise.html">noise</a> ·
-      <a href="drift.html">drift</a>
-    </div>
+  <header class="splash signal">
+    <h1>Signal</h1>
+    <p>Welcome to the Signal wall. Create a poem using the original text. Your words appear exactly as you write them.</p>
   </header>
 
   <main>
-    <div class="wall" id="poem-wall">
-      <!-- Poem cards will be injected here by JavaScript -->
-    </div>
+    <div id="poem-wall"></div>
+    <textarea id="poem-input" placeholder="Write your poem here..."></textarea>
+    <button id="submit-poem">Submit</button>
   </main>
 
   <script>
-    // Example database reference
-    const poems = [
-      { text: `The sun drifts low,\nShadows stretch long,\nSilence holds the field.`, author: 'Alice' },
-      { text: `Rain taps the window,\nA soft, steady rhythm,\nThoughts wander far.`, author: 'Bob' },
-      { text: `Night folds itself,\nStars blink awake slowly,\nDreams stir quietly.`, author: 'Charlie' }
-      // Add more poems as needed
-    ];
+    const poemWall = document.getElementById('poem-wall');
+    const input = document.getElementById('poem-input');
+    const button = document.getElementById('submit-poem');
 
-    const wall = document.getElementById('poem-wall');
+    // Reference your existing database
+    let poems = []; // replace with actual database fetch if needed
 
-    poems.forEach(poem => {
-      const card = document.createElement('div');
-      card.className = 'wall-card';
+    function displayPoem(text) {
+      const p = document.createElement('p');
+      p.textContent = text;
+      poemWall.appendChild(p);
+    }
 
-      const poemText = document.createElement('p');
-      poemText.className = 'wall-card-poem';
-      poemText.textContent = poem.text;
-
-      const author = document.createElement('div');
-      author.className = 'author';
-      author.textContent = `— ${poem.author}`;
-
-      card.appendChild(poemText);
-      card.appendChild(author);
-      wall.appendChild(card);
+    button.addEventListener('click', () => {
+      const text = input.value.trim();
+      if(text){
+        poems.push(text); // Save to database
+        displayPoem(text);
+        input.value = '';
+      }
     });
+
+    // Optionally display existing poems on load
+    poems.forEach(displayPoem);
   </script>
 </body>
 </html>
