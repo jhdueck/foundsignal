@@ -1,138 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Poem Wall — Signal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signal Poems</title>
   <style>
     :root {
-      --background: #fafafa;
-      --text: #111;
-      --text2: #333;
-      --text3: #666;
-      --card-bg: #fff;
-      --card-border: #ddd;
+      --bg: #fefefe;
+      --text: #222;
+      --text2: #555;
+      --text3: #888;
+      --accent: #0077cc;
     }
 
     body {
       margin: 0;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      background: var(--background);
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
       color: var(--text);
     }
 
     header {
       text-align: center;
-      padding: 2rem 1rem;
-      border-bottom: 1px solid var(--card-border);
+      padding: 2rem 1rem 1rem;
     }
 
-    h1 {
+    header h1 {
       margin: 0;
-      font-size: 2rem;
+      font-size: 3rem;
     }
 
-    .mode-note {
-      font-size: 12px;
+    header .subline {
+      font-size: 0.9rem;
       color: var(--text3);
       font-style: italic;
       margin-top: 0.5rem;
     }
 
-    .nav-modes {
+    .mode-nav {
+      font-size: 0.85rem;
+      margin-bottom: 2rem;
       text-align: center;
-      margin: 1rem 0;
-      font-size: 12px;
     }
 
-    .nav-modes a {
-      color: var(--text2);
+    .mode-nav a {
+      color: var(--accent);
       text-decoration: none;
       margin: 0 0.5rem;
     }
 
-    .nav-modes a:hover {
-      text-decoration: underline;
-    }
-
-    main {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 2rem 1rem;
+    .wall {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 1rem;
+      padding: 1rem 2rem;
     }
 
     .wall-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      background: #fff;
+      border: 1px solid #eee;
       padding: 1rem;
-      width: 250px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
     .wall-card-poem {
       margin: 0;
-      font-size: 0.95rem;
+      white-space: pre-line;
       line-height: 1.5;
-      color: var(--text2);
     }
 
-    .wall-card-author {
-      margin-top: 0.5rem;
-      font-size: 0.8rem;
-      color: var(--text3);
+    .author {
+      font-size: 0.85rem;
       text-align: right;
+      color: var(--text2);
+      margin-top: 0.5rem;
+    }
+
+    .machine-instruction {
+      font-size: 0.9rem;
+      color: var(--text3);
+      margin-top: 1rem;
+      text-align: center;
       font-style: italic;
     }
   </style>
 </head>
 <body>
+  <header>
+    <h1>Signal Poems</h1>
+    <div class="subline">original poems — structured and complete</div>
+    <div class="mode-nav">
+      viewing mode:
+      <a href="index.html">signal</a> ·
+      <a href="noise.html">noise</a> ·
+      <a href="drift.html">drift</a>
+    </div>
+  </header>
 
-<header>
-  <h1>Poem Wall — Signal</h1>
-  <div class="mode-note">original poems — structured and complete</div>
-  <div class="nav-modes">
-    viewing mode: 
-    <a href="index.html">signal</a> · 
-    <a href="noise.html">noise</a> · 
-    <a href="drift.html">drift</a>
-  </div>
-</header>
+  <main>
+    <div class="wall" id="poem-wall">
+      <!-- Poem cards will be injected here by JavaScript -->
+    </div>
+  </main>
 
-<main id="poem-wall">
-  <!-- Poems will be injected here -->
-</main>
+  <script>
+    // Example database reference
+    const poems = [
+      { text: `The sun drifts low,\nShadows stretch long,\nSilence holds the field.`, author: 'Alice' },
+      { text: `Rain taps the window,\nA soft, steady rhythm,\nThoughts wander far.`, author: 'Bob' },
+      { text: `Night folds itself,\nStars blink awake slowly,\nDreams stir quietly.`, author: 'Charlie' }
+      // Add more poems as needed
+    ];
 
-<script>
-  // Example database reference: you can replace this with your existing JSON
-  const poems = [
-    { text: "The sun rises and falls\nSilently upon the walls", author: "Alice" },
-    { text: "In the quiet of the night\nDreams take flight", author: "Bob" },
-    { text: "A river flows endlessly\nReflecting skies", author: "Carol" }
-    // your database entries go here
-  ];
+    const wall = document.getElementById('poem-wall');
 
-  const wall = document.getElementById('poem-wall');
+    poems.forEach(poem => {
+      const card = document.createElement('div');
+      card.className = 'wall-card';
 
-  poems.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'wall-card';
+      const poemText = document.createElement('p');
+      poemText.className = 'wall-card-poem';
+      poemText.textContent = poem.text;
 
-    const poem = document.createElement('p');
-    poem.className = 'wall-card-poem';
-    poem.textContent = p.text;
+      const author = document.createElement('div');
+      author.className = 'author';
+      author.textContent = `— ${poem.author}`;
 
-    const author = document.createElement('div');
-    author.className = 'wall-card-author';
-    author.textContent = `— ${p.author}`;
-
-    card.appendChild(poem);
-    card.appendChild(author);
-    wall.appendChild(card);
-  });
-</script>
-
+      card.appendChild(poemText);
+      card.appendChild(author);
+      wall.appendChild(card);
+    });
+  </script>
 </body>
 </html>
