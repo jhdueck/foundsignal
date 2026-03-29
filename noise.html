@@ -602,40 +602,57 @@ function redactText(text) {
     }
 
     async function loadWall() {
-      const masonry = document.getElementById('wallMasonry');
-      const empty   = document.getElementById('wallEmpty');
-      const status  = document.getElementById('wallStatus');
-      const count   = document.getElementById('wallCount');
+  const masonry = document.getElementById('wallMasonry');
+  const empty   = document.getElementById('wallEmpty');
+  const status  = document.getElementById('wallStatus');
+  const count   = document.getElementById('wallCount');
 
-      status.style.display  = 'block';
-      status.textContent    = 'gathering voices…';
-      masonry.style.display = 'none';
-      empty.style.display   = 'none';
+  status.style.display = 'block';
+  masonry.style.display = 'none';
+  empty.style.display = 'none';
+  status.textContent = 'gathering voices…';
 
-      const { data, error } = await db
-        .from('poems')
-        .select('id, text, author, created_at')
-        .order('created_at', { ascending: false });
+  const { data, error } = await db.from('poems').select('*').order('id', { ascending: false });
 
-      if (error) {
-        status.textContent = 'could not load poems — try refreshing';
-        console.error(error);
-        return;
-      }
+  if (error) {
+    console.error(error);
+    status.textContent = 'failed to load wall';
+    return;
+  }
 
-      status.style.display = 'none';
+  if (!data || data.length === 0) {
+    status.style.display = 'none';
+    empty.style.display = 'block';
+    count.textContent = '0 poems';
+    return;
+  }
 
-      /* shuffle so each visitor sees a different order */
-      const poems = shuffle(data || []);
-      count.textContent = poems.length + (poems.length === 1 ? ' poem found' : ' poems found');
+  masonry.innerHTML = '';
+  data.forEach(poem => {
+    const card = document.createElement('div');
+    card.className = 'wall-card';
+    const textDiv = document.createElement('div');
+    textDiv.className = 'wall-card-poem';
+    textDiv.textContent = poem.text;
+    const footer = document.createElement('div');
+    footer.className = 'wall-card-footer';
+    const author = document.createElement('span');
+    author.className = 'wall-card-author';
+    author.textContent = poem.author;
+    const date = document.createElement('span');
+    date.className = 'wall-card-date';
+    date.textContent = fmtDate(poem.created_at);
+    footer.appendChild(author);
+    footer.appendChild(date);
+    card.appendChild(textDiv);
+    card.appendChild(footer);
+    masonry.appendChild(card);
+  });
 
-      if (poems.length === 0) { empty.style.display = 'block'; return; }
-
-      masonry.innerHTML = '';
-      poems.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'wall-card';
-        card.innerHTML = `
+  count.textContent = data.length + (data.length === 1 ? ' poem' : ' poems');
+  status.style.display = 'none';
+  masonry.style.display = 'block';
+}
 <div class="wall-card-poem">${redactText(esc(p.text))}</div>
 <div class="wall-card-footer">
             <span class="wall-card-author">— ${esc(p.author || 'Anonymous')}</span>
