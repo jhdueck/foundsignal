@@ -223,10 +223,10 @@ body { background: #F4F3EE; color: var(--text); font-family: 'Lora', Georgia, se
 #noiseCanvas {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 1;        /* << below the UI */
   pointer-events: none;
 }
-
+.page.active > * { z-index: 2; position: relative; } /* UI elements above canvas */
 
 </style>      
 
@@ -566,13 +566,7 @@ body { background: #F4F3EE; color: var(--text); font-family: 'Lora', Georgia, se
 
     /* ── WALL ── */
     
-  #noiseOverlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: rgba(200,200,200,0.3); /* TEMP: see overlay */
-  z-index: 9999;
-}
+
 @keyframes noiseMove {
   0% { transform: translate(0,0); }
   50% { transform: translate(-2px, 2px); }
@@ -683,7 +677,6 @@ drawNoise();
     
   </script>
   
-  <div id="noiseOverlay"></div>
   <canvas id="noiseCanvas"></canvas>
 </body>
 </html>
