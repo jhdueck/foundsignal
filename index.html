@@ -164,19 +164,6 @@
     #page-wall { flex-direction: column; }
 
     .wall-header { padding: 1.25rem 1.5rem 1rem; border-bottom: 0.5px solid var(--border); display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; background: var(--bg); position: sticky; top: 0; z-index: 10; }
-
-    <div class="view-explainer">
-  <div class="view-label">VIEW: NOISE</div>
-  <div class="view-desc">
-    These poems have been partially hidden. What is missing shapes what remains.
-  </div>
-  <div class="view-nav">
-    <a href="index.html">Original</a>
-    <a href="noise.html">Noise</a>
-    <a href="drift.html">Drift</a>
-  </div>
-</div>
-    
     .wall-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; }
     .wall-title span { color: var(--coral); font-style: italic; }
     .wall-count { font-size: 12px; color: var(--text3); font-style: italic; }
@@ -201,6 +188,82 @@
 
     .wall-status { text-align: center; padding: 3rem; font-size: 13px; color: var(--text3); font-style: italic; }
     .wall-empty { text-align: center; padding: 4rem 1rem; font-size: 15px; color: var(--text3); font-style: italic; line-height: 2.4; }
+
+    .view-explainer {
+  padding: 0.75rem 1.5rem;
+  border-bottom: 0.5px solid var(--border);
+  background: var(--bg2);
+}
+
+.view-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+
+.view-desc {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+
+.view-nav a {
+  font-size: 12px;
+  margin-right: 10px;
+  color: var(--coral);
+  text-decoration: none;
+  font-style: italic;
+}
+
+.view-nav a:hover {
+  text-decoration: underline;
+}
+/* ── VIEW EXPLAINER ── */
+.view-explainer {
+  padding: 0.75rem 1.5rem;
+  border-bottom: 0.5px solid var(--border);
+  background: var(--bg2);
+}
+
+.view-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+
+.view-desc {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+
+.view-nav a {
+  font-size: 12px;
+  margin-right: 10px;
+  color: var(--coral);
+  text-decoration: none;
+  font-style: italic;
+}
+
+.view-nav a:hover {
+  text-decoration: underline;
+}
+
+/* ── SYSTEM NOTE ── */
+.system-note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text3);
+  font-style: italic;
+  margin: 2rem 0;
+}
+    
   </style>
 </head>
 <body>
@@ -313,6 +376,21 @@
   ══════════════════════════════════════ -->
   <div class="page" id="page-wall">
     <div class="wall-header">
+      
+<!-- VIEW EXPLAINER: SIGNAL -->
+<div class="view-explainer">
+  <div class="view-label">VIEW: ORIGINAL</div>
+  <div class="view-desc">
+    These poems appear exactly as they were written.
+  </div>
+  <div class="view-nav">
+    <a href="index.html">Original</a>
+    <a href="noise.html">Noise</a>
+    <a href="drift.html">Drift</a>
+  </div>
+</div>
+</div>
+      
       <div class="wall-title">Found <span>Signal</span></div>
       <div class="wall-count" id="wallCount"></div>
       <button class="wall-back" onclick="showPage('entry')">← back to entry</button>
@@ -331,7 +409,11 @@
         <button class="btn-primary" onclick="showPage('machine')" style="margin-top:0.5rem;">enter the machine →</button>
       </div>
     </div>
-  </div>
+<div class="system-note">
+  The text has not changed. Only the way you encounter it has.
+</div>
+</div>
+<!-- SYSTEM NOTE -->
 
 
   <!-- ══════════════════════════════════════
