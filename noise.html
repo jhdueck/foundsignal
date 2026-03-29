@@ -44,8 +44,7 @@
     }
 
     html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: 'Lora', Georgia, serif; min-height: 100vh; }
-
+body { background: #F4F3EE; color: var(--text); font-family: 'Lora', Georgia, serif; min-height: 100vh; }
     .page { display: none; min-height: 100vh; }
     .page.active { display: flex; flex-direction: column; }
 
@@ -197,18 +196,49 @@
   ══════════════════════════════════════ -->
   <div class="page active" id="page-entry">
     <div class="entry-inner">
-      <div class="entry-eyebrow">A found poetry machine</div>
-<div class="entry-title">
-  Found <span class="entry-slash">Si██Noise</span>
-</div>      <div class="entry-rule"></div>
-      <div class="entry-verse">
-        somewhere in this data<br>
-        was a <em>pattern</em><br>
-        a signal buried in noise<br>
-        <br>
-        what do you hear<br>
-        when you listen?
-      </div>
+<div class="entry-eyebrow" id="redactEyebrow">A found ████ machine</div>
+<div class="entry-title" id="redactTitle">Found <span class="entry-slash">S██l</span></div>
+
+
+<style>
+  @keyframes flicker {
+  0%, 19%, 21%, 50%, 52%, 100% { opacity: 1; }
+  20%, 51% { opacity: 0.3; }
+}
+
+#redactTitle, #redactEyebrow, .entry-verse span.redacted {
+  display: inline-block;
+  animation: flicker 1.2s infinite;
+}
+
+@keyframes bgFlicker {
+  0%, 40%, 100% { background-color: var(--bg); }
+  30%, 90% { background-color: #E4E0D6; } /* flicker color */
+}
+
+#page-entry.active {
+  animation: bgFlicker 0.5s infinite steps(1);
+}
+
+#noiseCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+
+</style>      
+
+<div class="entry-rule"></div>
+     <div class="entry-verse">
+  somewhere in this <span class="redacted">███</span><br>
+  was a <em><span class="redacted">p███rn</span></em><br>
+  a signal buried in <span class="redacted">████</span><br>
+  <br>
+  what do you hear<br>
+  when you listen?
+</div>
       <button class="btn-primary" onclick="showPage('machine')">enter the text →</button>
       <button class="btn-ghost" onclick="showPage('wall')">or read what others found</button>
       <!-- version links -->
@@ -535,6 +565,20 @@
     });
 
     /* ── WALL ── */
+    
+  #noiseOverlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: rgba(200,200,200,0.3); /* TEMP: see overlay */
+  z-index: 9999;
+}
+@keyframes noiseMove {
+  0% { transform: translate(0,0); }
+  50% { transform: translate(-2px, 2px); }
+  100% { transform: translate(0,0); }
+}
+    
     function esc(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
@@ -611,6 +655,35 @@ function redactText(text) {
     /* ── INIT ── */
     renderSource();
     renderPoem();
+    
+    const canvas = document.getElementById('noiseCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function drawNoise() {
+  const imageData = ctx.createImageData(canvas.width, canvas.height);
+  const buffer = new Uint32Array(imageData.data.buffer);
+
+  for (let i = 0; i < buffer.length; i++) {
+    const val = Math.random() < 0.04 ? 0xFFFFFFFF : 0x00000000; // ~4% pixels white
+    buffer[i] = val;
+  }
+
+  ctx.putImageData(imageData, 0, 0);
+  requestAnimationFrame(drawNoise);
+}
+
+drawNoise();
+    
   </script>
+  
+  <div id="noiseOverlay"></div>
+  <canvas id="noiseCanvas"></canvas>
 </body>
 </html>
