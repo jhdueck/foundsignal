@@ -1,49 +1,138 @@
-<div class="page" id="page-wall">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poem Wall — Signal</title>
+  <style>
+    :root {
+      --background: #fafafa;
+      --text: #111;
+      --text2: #333;
+      --text3: #666;
+      --card-bg: #fff;
+      --card-border: #ddd;
+    }
 
-  <!-- VIEW EXPLAINER -->
-  <div class="view-explainer">
-    <div class="view-label">VIEW: ORIGINAL</div>
-    <div class="view-desc">
-      These poems appear exactly as they were written.
-    </div>
-    <div class="view-nav">
-      <a href="index.html">Original</a>
-      <a href="noise.html">Noise</a>
-      <a href="drift.html">Drift</a>
-    </div>
+    body {
+      margin: 0;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background: var(--background);
+      color: var(--text);
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .mode-note {
+      font-size: 12px;
+      color: var(--text3);
+      font-style: italic;
+      margin-top: 0.5rem;
+    }
+
+    .nav-modes {
+      text-align: center;
+      margin: 1rem 0;
+      font-size: 12px;
+    }
+
+    .nav-modes a {
+      color: var(--text2);
+      text-decoration: none;
+      margin: 0 0.5rem;
+    }
+
+    .nav-modes a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 2rem 1rem;
+      gap: 1rem;
+    }
+
+    .wall-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 1rem;
+      width: 250px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+
+    .wall-card-poem {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--text2);
+    }
+
+    .wall-card-author {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text3);
+      text-align: right;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Poem Wall — Signal</h1>
+  <div class="mode-note">original poems — structured and complete</div>
+  <div class="nav-modes">
+    viewing mode: 
+    <a href="index.html">signal</a> · 
+    <a href="noise.html">noise</a> · 
+    <a href="drift.html">drift</a>
   </div>
+</header>
 
-  <!-- HEADER -->
-  <div class="wall-header">
-    <div class="wall-title">Found <span>Signal</span></div>
-    <div class="wall-count" id="wallCount"></div>
-    <button class="wall-back" onclick="showPage('entry')">← back to entry</button>
-  </div>
+<main id="poem-wall">
+  <!-- Poems will be injected here -->
+</main>
 
-  <div class="wall-source-bar">
-    All poems found within: Weir, A. (2021). <em>Project Hail Mary.</em> Ballantine Books. p. 47. — words selected by readers, arrangements their own.
-  </div>
+<script>
+  // Example database reference: you can replace this with your existing JSON
+  const poems = [
+    { text: "The sun rises and falls\nSilently upon the walls", author: "Alice" },
+    { text: "In the quiet of the night\nDreams take flight", author: "Bob" },
+    { text: "A river flows endlessly\nReflecting skies", author: "Carol" }
+    // your database entries go here
+  ];
 
-  <div class="wall-body">
-    <div class="wall-toolbar">
-      <button class="btn-ghost" onclick="loadWall()">↻ refresh wall</button>
-    </div>
+  const wall = document.getElementById('poem-wall');
 
-    <div class="wall-status" id="wallStatus">gathering voices…</div>
+  poems.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'wall-card';
 
-    <div class="wall-masonry" id="wallMasonry" style="display:none;"></div>
+    const poem = document.createElement('p');
+    poem.className = 'wall-card-poem';
+    poem.textContent = p.text;
 
-    <div class="wall-empty" id="wallEmpty" style="display:none;">
-      No poems yet —<br>
-      be the first to find one inside the text.<br><br>
-      <button class="btn-primary" onclick="showPage('machine')" style="margin-top:0.5rem;">
-        enter the machine →
-      </button>
-    </div>
-  </div>
+    const author = document.createElement('div');
+    author.className = 'wall-card-author';
+    author.textContent = `— ${p.author}`;
 
-  <div class="system-note">
-    The text has not changed. Only the way you encounter it has.
-  </div>
+    card.appendChild(poem);
+    card.appendChild(author);
+    wall.appendChild(card);
+  });
+</script>
 
-</div>
+</body>
+</html>
