@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Found Signal — A Found Poetry Noise Machine</title>
+  <title>Found Noise — A Found Poetry Noise Machine</title>
   <meta name="description" content="A found poetry machine built from Project Hail Mary by Andy Weir. Select words, build a poem, add your voice to the wall.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,10 +12,9 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      /* Adjusted for a distinct "Paper/Parchment" feel vs a plain white parent page */
-      --bg:        #F5F2EB; 
-      --bg2:       #EBE5D9;
-      --bg3:       #E0D8CB;
+      --bg:        #FAF8F4;
+      --bg2:       #F2EDE5;
+      --bg3:       #EAE3D8;
       --text:      #1C1713;
       --text2:     #5A5047;
       --text3:     #9C8E81;
@@ -30,9 +29,9 @@
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg:        #12110F;
-        --bg2:       #1C1916;
-        --bg3:       #26221E;
+        --bg:        #1A1612;
+        --bg2:       #231E19;
+        --bg3:       #2C2520;
         --text:      #F0EBE3;
         --text2:     #B0A090;
         --text3:     #6E6055;
@@ -47,8 +46,8 @@
     html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--text); font-family: 'Lora', Georgia, serif; min-height: 100vh; }
 
-    /* ── REDACTION AESTHETIC ── */
-    .redacted { 
+    /* Redacted Title Styling */
+    .redacted-title { 
       background: var(--text); 
       color: var(--text); 
       padding: 0 0.15em; 
@@ -56,34 +55,70 @@
       line-height: 0.9;
       transition: background 0.4s ease, color 0.4s ease;
       cursor: help;
+      font-style: italic; /* Match original */
     }
-    .redacted:hover { background: transparent; color: inherit; }
+    
+    .redacted-title:hover { 
+      background: transparent; 
+      color: var(--coral); /* Reveal in the accent color */
+    }
 
     .page { display: none; min-height: 100vh; }
     .page.active { display: flex; flex-direction: column; }
 
-    /* ── ENTRY ── */
-    #page-entry { align-items: center; justify-content: center; }
+    /* ── NOISE EFFECT ── */
+    #page-entry { 
+      position: relative;
+      align-items: center; 
+      justify-content: center; 
+      overflow: hidden;
+    }
+
+    #page-entry::before {
+      content: "";
+      position: absolute;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      pointer-events: none;
+      animation: noise-shift 0.2s steps(2) infinite;
+      z-index: 0;
+    }
+
+    @keyframes noise-shift {
+      0% { transform: translate(0,0); }
+      10% { transform: translate(-1%,-1%); }
+      20% { transform: translate(-2%,1%); }
+      30% { transform: translate(1%,-2%); }
+      40% { transform: translate(-1%,2%); }
+      50% { transform: translate(-2%,-1%); }
+      60% { transform: translate(2%,1%); }
+      70% { transform: translate(1%,1%); }
+      80% { transform: translate(-1%,-2%); }
+      90% { transform: translate(2%,-2%); }
+      100% { transform: translate(1%,1%); }
+    }
 
     .entry-inner {
+      position: relative;
+      z-index: 1;
       width: 100%; max-width: 560px; margin: auto;
       padding: 4rem 2rem 2rem;
       display: flex; flex-direction: column; align-items: center; text-align: center; flex: 1;
     }
 
     .entry-eyebrow { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text3); margin-bottom: 2.5rem; }
-
     .entry-title { font-family: 'Playfair Display', serif; font-size: clamp(40px, 10vw, 64px); font-weight: 400; line-height: 1.05; letter-spacing: -0.01em; margin-bottom: 0.3rem; }
-
     .entry-rule { width: 36px; height: 0.5px; background: var(--border2); margin: 2rem auto; }
-
     .entry-verse { font-size: 16px; font-style: italic; line-height: 2.3; color: var(--text2); margin-bottom: 3rem; }
     .entry-verse em { color: var(--coral); font-style: normal; }
 
     .btn-primary {
       font-family: 'Lora', serif; font-size: 13px; letter-spacing: 0.08em;
       padding: 11px 32px; border: 0.5px solid var(--coral); border-radius: var(--rad-md);
-      background: transparent; color: var(--coral); cursor: pointer;
+      background: var(--bg); color: var(--coral); cursor: pointer;
       transition: background 0.2s, color 0.2s; margin-bottom: 1rem;
     }
     .btn-primary:hover { background: var(--coral); color: var(--coral-lt); }
@@ -91,63 +126,47 @@
     .btn-ghost { font-family: 'Lora', serif; font-size: 12px; color: var(--text3); background: none; border: none; cursor: pointer; font-style: italic; transition: color 0.2s; }
     .btn-ghost:hover { color: var(--coral); }
 
-    .entry-footer { width: 100%; padding: 1.5rem 2rem; border-top: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 0.75rem; margin-top: auto; }
+    .entry-footer { position: relative; z-index: 1; width: 100%; padding: 1.5rem 2rem; border-top: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 0.75rem; margin-top: auto; }
     .entry-footer-cite, .entry-footer-theory { font-size: 11px; color: var(--text3); font-style: italic; line-height: 1.7; }
     .entry-footer-theory { text-align: right; }
 
     /* ── MACHINE ── */
     #page-machine { flex-direction: column; }
-
     .machine-nav { padding: 0.85rem 1.5rem; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; gap: 1rem; background: var(--bg); position: sticky; top: 0; z-index: 10; }
     .machine-nav-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 400; }
-    
     .machine-nav-back, .machine-nav-wall { font-size: 12px; color: var(--text3); background: none; border: none; cursor: pointer; font-family: 'Lora', serif; transition: color 0.2s; }
     .machine-nav-wall { margin-left: auto; font-style: italic; }
     .machine-nav-back:hover, .machine-nav-wall:hover { color: var(--coral); }
-
     .machine-body { flex: 1; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; max-width: 1200px; width: 100%; margin: 0 auto; }
-
     .machine-instruction { font-size: 13px; color: var(--text2); padding: 0.65rem 1rem; border: 0.5px solid var(--border); border-radius: var(--rad-md); background: var(--bg2); line-height: 1.7; text-align: center; }
-
     .resize-hint { font-size: 11px; color: var(--text3); text-align: center; font-style: italic; letter-spacing: 0.03em; }
-
     .machine-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; }
     @media (max-width: 640px) { .machine-cols { grid-template-columns: 1fr !important; } }
-
     .panel-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.6rem; }
-
     .source-box { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--rad-lg); padding: 1.1rem; line-height: 2.1; font-size: 15px; overflow-y: auto; resize: vertical; min-height: 200px; height: 340px; }
-
     .source-citation { display: block; margin-top: 1rem; padding-top: 0.75rem; border-top: 0.5px solid var(--border); font-size: 11px; color: var(--text3); font-style: italic; line-height: 1.6; }
-
     .word { display: inline; cursor: pointer; border-radius: 3px; padding: 1px 2px; transition: background 0.12s, color 0.12s, opacity 0.15s; }
     .word:hover { background: var(--coral-mid); color: #3A1A0A; }
     .word.selected { background: var(--coral); color: var(--coral-lt); }
     .word.faded { opacity: 0.2; }
-
     .poem-panel { border: 0.5px solid var(--border); border-radius: var(--rad-lg); padding: 1.1rem; height: 340px; background: var(--bg); display: flex; flex-direction: column; overflow-y: auto; resize: vertical; }
-
     .poem-lines { flex: 1; font-size: 16px; line-height: 2.1; font-style: italic; min-height: 120px; }
     .poem-placeholder { font-size: 14px; color: var(--text3); font-style: italic; margin-top: 1.5rem; text-align: center; line-height: 2; }
     .poem-word { display: inline; cursor: pointer; color: var(--coral); transition: opacity 0.15s; }
     .poem-word:hover { text-decoration: line-through; opacity: 0.5; }
     .poem-break { display: block; height: 0.15rem; }
-
     .word-count { font-size: 12px; color: var(--text3); margin-top: 0.5rem; font-style: italic; }
     .poem-controls { margin-top: 0.75rem; display: flex; gap: 8px; flex-wrap: wrap; }
-
     .btn-sm { font-family: 'Lora', serif; font-size: 12px; padding: 6px 14px; border: 0.5px solid var(--border2); border-radius: var(--rad-md); background: transparent; cursor: pointer; color: var(--text2); transition: background 0.15s, color 0.15s; letter-spacing: 0.03em; }
     .btn-sm:hover { background: var(--bg2); color: var(--text); }
     .btn-sm.coral { border-color: var(--coral); color: var(--coral); }
     .btn-sm.coral:hover { background: var(--coral-lt); }
     .btn-sm:disabled { opacity: 0.5; cursor: not-allowed; }
-
     .size-controls { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 0.5px solid var(--border); }
     .size-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
     .size-label { font-size: 11px; color: var(--text3); width: 90px; flex-shrink: 0; }
     .size-row input[type=range] { flex: 1; accent-color: var(--coral); cursor: pointer; }
     .size-val { font-size: 11px; color: var(--text2); width: 32px; text-align: right; }
-
     .toggle-wrap { margin-top: 0.75rem; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text2); }
     .toggle-switch { position: relative; width: 36px; height: 20px; cursor: pointer; display: inline-block; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -156,7 +175,6 @@
     input:checked + .toggle-slider { background: var(--coral); }
     input:checked + .toggle-slider:before { transform: translateX(16px); }
 
-    /* ── MODAL ── */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(28,23,19,0.6); z-index: 100; align-items: center; justify-content: center; padding: 1.5rem; }
     .modal-overlay.open { display: flex; }
     .modal-box { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--rad-lg); padding: 1.75rem; max-width: 400px; width: 100%; }
@@ -168,35 +186,26 @@
     .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .modal-note { font-size: 11px; color: var(--text3); font-style: italic; margin-top: 1rem; line-height: 1.6; }
 
-    /* ── TOAST ── */
     .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 13px; font-style: italic; padding: 10px 20px; border-radius: var(--rad-md); z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
     .toast.show { opacity: 1; }
 
-    /* ── WALL ── */
     #page-wall { flex-direction: column; }
-
     .wall-header { padding: 1.25rem 1.5rem 1rem; border-bottom: 0.5px solid var(--border); display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; background: var(--bg); position: sticky; top: 0; z-index: 10; }
     .wall-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; }
     .wall-count { font-size: 12px; color: var(--text3); font-style: italic; }
     .wall-back { margin-left: auto; font-size: 12px; color: var(--text3); background: none; border: none; font-family: 'Lora', serif; cursor: pointer; transition: color 0.2s; }
     .wall-back:hover { color: var(--coral); }
-
     .wall-source-bar { padding: 0.55rem 1.5rem; background: var(--bg2); border-bottom: 0.5px solid var(--border); font-size: 11px; color: var(--text3); font-style: italic; line-height: 1.6; }
-
     .wall-body { flex: 1; padding: 1.5rem; max-width: 1200px; width: 100%; margin: 0 auto; }
-
     .wall-toolbar { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
-
     .wall-masonry { columns: 3; column-gap: 1rem; }
     @media (max-width: 700px) { .wall-masonry { columns: 2; } }
     @media (max-width: 420px) { .wall-masonry { columns: 1; } }
-
     .wall-card { break-inside: avoid; background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--rad-md); padding: 0.9rem 1rem; margin-bottom: 1rem; }
     .wall-card-poem { font-size: 14px; font-style: italic; line-height: 2; color: var(--text); white-space: pre-line; margin-bottom: 0.65rem; }
     .wall-card-footer { display: flex; justify-content: space-between; align-items: baseline; border-top: 0.5px solid var(--border); padding-top: 0.5rem; }
     .wall-card-author { font-size: 11px; color: var(--text2); letter-spacing: 0.03em; }
     .wall-card-date { font-size: 10px; color: var(--text3); }
-
     .wall-status { text-align: center; padding: 3rem; font-size: 13px; color: var(--text3); font-style: italic; }
     .wall-empty { text-align: center; padding: 4rem 1rem; font-size: 15px; color: var(--text3); font-style: italic; line-height: 2.4; }
   </style>
@@ -206,7 +215,7 @@
   <div class="page active" id="page-entry">
     <div class="entry-inner">
       <div class="entry-eyebrow">A found poetry machine</div>
-      <div class="entry-title">Found <span class="redacted">Signal</span></div>
+      <div class="entry-title">Found <span class="redacted-title">Noise</span></div>
       <div class="entry-rule"></div>
       <div class="entry-verse">
         somewhere in this data<br>
@@ -218,7 +227,15 @@
       </div>
       <button class="btn-primary" onclick="showPage('machine')">enter the text →</button>
       <button class="btn-ghost" onclick="showPage('wall')">or read what others found</button>
+
+      <div class="version-links" style="margin-top: 2rem; font-size: 12px; color: var(--text3); text-align: center;">
+          Versions: 
+          <a href="index.html" style="color: var(--coral); text-decoration: none;">Original</a> | 
+          <a href="drift.html" style="color: var(--coral); text-decoration: none;">Drift</a> |
+          <a href="noise.html" style="color: var(--coral); text-decoration: none;"><strong>Noise</strong></a>
+      </div>
     </div>
+
     <div class="entry-footer">
       <div class="entry-footer-cite">
         Source: Weir, A. (2021).<br>
@@ -235,7 +252,7 @@
   <div class="page" id="page-machine">
     <div class="machine-nav">
       <button class="machine-nav-back" onclick="showPage('entry')">← entry</button>
-      <div class="machine-nav-title">Found <span class="redacted">Noise</span></div>
+      <div class="machine-nav-title">Found <span class="redacted-title">Noise</span></div>
       <button class="machine-nav-wall" onclick="showPage('wall')">view the wall →</button>
     </div>
 
@@ -302,7 +319,7 @@
 
   <div class="page" id="page-wall">
     <div class="wall-header">
-      <div class="wall-title">Found <span class="redacted">Signal</span></div>
+      <div class="wall-title">Found <span class="redacted-title">Noise</span></div>
       <div class="wall-count" id="wallCount"></div>
       <button class="wall-back" onclick="showPage('entry')">← back to entry</button>
     </div>
@@ -342,17 +359,14 @@
 
   <div class="toast" id="toast"></div>
 
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    /* ── SUPABASE CLIENT ── */
     const { createClient } = supabase;
     const db = createClient(
       'https://ymgqfhgekpzdeuzokznr.supabase.co',
       'sb_publishable_kvgcGdkEMMhuBq7VQhKkhw_ji23s6lp'
     );
 
-    /* ── TOAST ── */
     function showToast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
@@ -360,7 +374,6 @@
       setTimeout(() => t.classList.remove('show'), 2800);
     }
 
-    /* ── PAGE NAV ── */
     function showPage(id) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('page-' + id).classList.add('active');
@@ -368,7 +381,6 @@
       if (id === 'wall') loadWall();
     }
 
-    /* ── SOURCE TEXT ── */
     const SOURCE = `Something poked at my brain. A feeling. A sense that something wasn't right. I couldn't put my finger on it. Maybe I was just tired. I'd been working for fourteen hours straight trying to figure out why the Astrophage breeding rate had increased. I checked my math again. And again. Was I the only one who noticed? Probably not. But I might be the only one who cared enough to lose sleep over it. I leaned back in my chair and stared at the ceiling. Somewhere in this data was a pattern. A signal buried in noise. That's all science is, really. Listening for the signal. Filtering out everything else. The universe is not required to make sense to you. It just sits there, massive and indifferent, waiting for you to catch up. But if you listen — really listen — something answers back. Not in words. Not in anything so simple. In pattern. In rhythm. In the way two things that have no reason to match somehow do. That's what keeps me awake. Not the fear of being wrong. The fear of missing it.`;
     const CITATION = 'Weir, A. (2021). Project Hail Mary. Ballantine Books. p. 47.';
 
@@ -391,8 +403,8 @@
           const sp = document.createElement('span');
           sp.className = 'word';
           sp.textContent = tok;
-          if (selected.includes(i))                          sp.classList.add('selected');
-          if (fadeToggle.checked && !selected.includes(i))   sp.classList.add('faded');
+          if (selected.includes(i)) sp.classList.add('selected');
+          if (fadeToggle.checked && !selected.includes(i)) sp.classList.add('faded');
           sp.addEventListener('click', () => toggleWord(i, tok.replace(/[^a-zA-Z0-9'''\-]/g, '')));
           sourceBox.appendChild(sp);
         }
@@ -406,8 +418,8 @@
     function toggleWord(idx, clean) {
       if (!clean) return;
       if (selected.includes(idx)) {
-        selected   = selected.filter(s => s !== idx);
-        poemItems  = poemItems.filter(p => !(p.type === 'word' && p.idx === idx));
+        selected = selected.filter(s => s !== idx);
+        poemItems = poemItems.filter(p => !(p.type === 'word' && p.idx === idx));
       } else {
         selected.push(idx);
         poemItems.push({ type: 'word', idx, text: clean });
@@ -436,7 +448,7 @@
           sp.textContent = item.text + ' ';
           sp.title = 'click to remove';
           sp.addEventListener('click', () => {
-            selected  = selected.filter(s => s !== item.idx);
+            selected = selected.filter(s => s !== item.idx);
             poemItems.splice(pi, 1);
             renderSource();
             renderPoem();
@@ -457,34 +469,27 @@
       return t.trim();
     }
 
-    /* ── MACHINE CONTROLS ── */
     document.getElementById('breakBtn').addEventListener('click', () => {
       if (poemItems.length) { poemItems.push({ type: 'break' }); renderPoem(); }
     });
-
     document.getElementById('clearBtn').addEventListener('click', () => {
       selected = []; poemItems = []; renderSource(); renderPoem();
     });
-
     document.getElementById('colWidth').addEventListener('input', function() {
       const v = parseInt(this.value);
       document.getElementById('machineCols').style.gridTemplateColumns = v + 'fr ' + (100 - v) + 'fr';
       document.getElementById('colWidthVal').textContent = v + '%';
     });
-
     document.getElementById('srcSize').addEventListener('input', function() {
       sourceBox.style.fontSize = this.value + 'px';
       document.getElementById('srcSizeVal').textContent = this.value + 'px';
     });
-
     document.getElementById('poemSize').addEventListener('input', function() {
       poemLines.style.fontSize = this.value + 'px';
       document.getElementById('poemSizeVal').textContent = this.value + 'px';
     });
-
     fadeToggle.addEventListener('change', renderSource);
 
-    /* ── SAVE MODAL ── */
     document.getElementById('saveBtn').addEventListener('click', () => {
       const t = getPoemText();
       if (!t) { showToast('select some words first'); return; }
@@ -492,51 +497,39 @@
       document.getElementById('authorInput').value = '';
       document.getElementById('saveModal').classList.add('open');
     });
-
     document.getElementById('cancelSaveBtn').addEventListener('click', () => {
       document.getElementById('saveModal').classList.remove('open');
     });
-
     document.getElementById('confirmSaveBtn').addEventListener('click', async () => {
-      const text   = getPoemText();
+      const text = getPoemText();
       const author = document.getElementById('authorInput').value.trim() || 'Anonymous';
       if (!text) return;
-
       const btn = document.getElementById('confirmSaveBtn');
       btn.textContent = 'posting…';
       btn.disabled = true;
-
       const { error } = await db.from('poems').insert({ text, author });
-
       btn.textContent = 'post to wall ↗';
       btn.disabled = false;
-
       if (error) {
-        console.error(error);
         showToast('something went wrong — try again');
         return;
       }
-
       document.getElementById('saveModal').classList.remove('open');
       selected = []; poemItems = []; renderSource(); renderPoem();
       showToast('your poem is on the wall');
       showPage('wall');
     });
 
-    /* ── WALL ── */
     function esc(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
-
     function fmtDate(ts) {
       return new Date(ts).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' });
     }
     function redactText(text) {
       return text.split(" ").map(word => {
         if (word.length <= 3) return word;
-        if (Math.random() < 0.3) {
-          return "████";
-        }
+        if (Math.random() < 0.3) return "████";
         return word;
       }).join(" ");
     }
@@ -553,47 +546,29 @@
       const empty   = document.getElementById('wallEmpty');
       const status  = document.getElementById('wallStatus');
       const count   = document.getElementById('wallCount');
-
       status.style.display  = 'block';
       status.textContent    = 'gathering voices…';
       masonry.style.display = 'none';
       empty.style.display   = 'none';
-
-      const { data, error } = await db
-        .from('poems')
-        .select('id, text, author, created_at')
-        .order('created_at', { ascending: false });
-
+      const { data, error } = await db.from('poems').select('id, text, author, created_at').order('created_at', { ascending: false });
       if (error) {
         status.textContent = 'could not load poems — try refreshing';
-        console.error(error);
         return;
       }
-
       status.style.display = 'none';
-
-      /* shuffle so each visitor sees a different order */
       const poems = shuffle(data || []);
       count.textContent = poems.length + (poems.length === 1 ? ' poem found' : ' poems found');
-
       if (poems.length === 0) { empty.style.display = 'block'; return; }
-
       masonry.innerHTML = '';
       poems.forEach(p => {
         const card = document.createElement('div');
         card.className = 'wall-card';
-        card.innerHTML = `
-        <div class="wall-card-poem">${redactText(esc(p.text))}</div>
-        <div class="wall-card-footer">
-          <span class="wall-card-author">— ${esc(p.author || 'Anonymous')}</span>
-          <span class="wall-card-date">${fmtDate(p.created_at)}</span>
-        </div>`;
+        card.innerHTML = `<div class="wall-card-poem">${redactText(esc(p.text))}</div><div class="wall-card-footer"><span class="wall-card-author">— ${esc(p.author || 'Anonymous')}</span><span class="wall-card-date">${fmtDate(p.created_at)}</span></div>`;
         masonry.appendChild(card);
       });
       masonry.style.display = 'block';
     }
 
-    /* ── INIT ── */
     renderSource();
     renderPoem();
   </script>
