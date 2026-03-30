@@ -393,7 +393,20 @@ body { background: #F4F3EE; color: var(--text); font-family: 'Lora', Georgia, se
       'sb_publishable_kvgcGdkEMMhuBq7VQhKkhw_ji23s6lp'
     );
 
-    /* ── TOAST ── */
+    /* ── STATE & CONSTANTS ── */
+    const SOURCE = `Something poked at my brain. A feeling. A sense that something wasn't right. I couldn't put my finger on it. Maybe I was just tired. I'd been working for fourteen hours straight trying to figure out why the Astrophage breeding rate had increased. I checked my math again. And again. Was I the only one who noticed? Probably not. But I might be the only one who cared enough to lose sleep over it. I leaned back in my chair and stared at the ceiling. Somewhere in this data was a pattern. A signal buried in noise. That's all science is, really. Listening for the signal. Filtering out everything else. The universe is not required to make sense to you. It just sits there, massive and indifferent, waiting for you to catch up. But if you listen — really listen — something answers back. Not in words. Not in anything so simple. In pattern. In rhythm. In the way two things that have no reason to match somehow do. That's what keeps me awake. Not the fear of being wrong. The fear of missing it.`;
+    const CITATION = 'Weir, A. (2021). Project Hail Mary. Ballantine Books. p. 47.';
+    const tokens = SOURCE.split(/(\s+)/).filter(Boolean);
+    let selected = [];
+    let poemItems = [];
+
+    const sourceBox = document.getElementById('sourceBox');
+    const poemLines = document.getElementById('poemLines');
+    const placeholder = document.getElementById('poemPlaceholder');
+    const wordCount = document.getElementById('wordCount');
+    const fadeToggle = document.getElementById('fadeToggle');
+
+    /* ── HELPERS ── */
     function showToast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
@@ -401,7 +414,22 @@ body { background: #F4F3EE; color: var(--text); font-family: 'Lora', Georgia, se
       setTimeout(() => t.classList.remove('show'), 2800);
     }
 
-    /* ── PAGE NAV ── */
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function fmtDate(ts) {
+      return new Date(ts).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function redactText(text) {
+      return text.split(" ").map(word => {
+        if (word.length <= 3) return word;
+        return Math.random() < 0.3 ? "████" : word;
+      }).join(" ");
+    }
+
+    /* ── NAVIGATION ── */
     function showPage(id) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('page-' + id).classList.add('active');
@@ -409,20 +437,7 @@ body { background: #F4F3EE; color: var(--text); font-family: 'Lora', Georgia, se
       if (id === 'wall') loadWall();
     }
 
-    /* ── SOURCE TEXT ── */
-    const SOURCE = `Something poked at my brain. A feeling. A sense that something wasn't right. I couldn't put my finger on it. Maybe I was just tired. I'd been working for fourteen hours straight trying to figure out why the Astrophage breeding rate had increased. I checked my math again. And again. Was I the only one who noticed? Probably not. But I might be the only one who cared enough to lose sleep over it. I leaned back in my chair and stared at the ceiling. Somewhere in this data was a pattern. A signal buried in noise. That's all science is, really. Listening for the signal. Filtering out everything else. The universe is not required to make sense to you. It just sits there, massive and indifferent, waiting for you to catch up. But if you listen — really listen — something answers back. Not in words. Not in anything so simple. In pattern. In rhythm. In the way two things that have no reason to match somehow do. That's what keeps me awake. Not the fear of being wrong. The fear of missing it.`;
-    const CITATION = 'Weir, A. (2021). Project Hail Mary. Ballantine Books. p. 47.';
-
-    const tokens = SOURCE.split(/(\s+)/).filter(Boolean);
-    let selected  = [];
-    let poemItems = [];
-
-    const sourceBox   = document.getElementById('sourceBox');
-    const poemLines   = document.getElementById('poemLines');
-    const placeholder = document.getElementById('poemPlaceholder');
-    const wordCount   = document.getElementById('wordCount');
-    const fadeToggle  = document.getElementById('fadeToggle');
-
+    /* ── MACHINE LOGIC ── */
     function renderSource() {
       sourceBox.innerHTML = '';
       tokens.forEach((tok, i) => {
@@ -432,8 +447,8 @@ body { background: #F4F3EE; color: var(--text); font-family: 'Lora', Georgia, se
           const sp = document.createElement('span');
           sp.className = 'word';
           sp.textContent = tok;
-          if (selected.includes(i))                          sp.classList.add('selected');
-          if (fadeToggle.checked && !selected.includes(i))   sp.classList.add('faded');
+          if (selected.includes(i)) sp.classList.add('selected');
+          if (fadeToggle.checked && !selected.includes(i)) sp.classList.add('faded');
           sp.addEventListener('click', () => toggleWord(i, tok.replace(/[^a-zA-Z0-9'''\-]/g, '')));
           sourceBox.appendChild(sp);
         }
@@ -447,8 +462,8 @@ body { background: #F4F3EE; color: var(--text); font-family: 'Lora', Georgia, se
     function toggleWord(idx, clean) {
       if (!clean) return;
       if (selected.includes(idx)) {
-        selected   = selected.filter(s => s !== idx);
-        poemItems  = poemItems.filter(p => !(p.type === 'word' && p.idx === idx));
+        selected = selected.filter(s => s !== idx);
+        poemItems = poemItems.filter(p => !(p.type === 'word' && p.idx === idx));
       } else {
         selected.push(idx);
         poemItems.push({ type: 'word', idx, text: clean });
@@ -477,7 +492,7 @@ body { background: #F4F3EE; color: var(--text); font-family: 'Lora', Georgia, se
           sp.textContent = item.text + ' ';
           sp.title = 'click to remove';
           sp.addEventListener('click', () => {
-            selected  = selected.filter(s => s !== item.idx);
+            selected = selected.filter(s => s !== item.idx);
             poemItems.splice(pi, 1);
             renderSource();
             renderPoem();
@@ -498,7 +513,7 @@ body { background: #F4F3EE; color: var(--text); font-family: 'Lora', Georgia, se
       return t.trim();
     }
 
-    /* ── MACHINE CONTROLS ── */
+    /* ── CONTROLS ── */
     document.getElementById('breakBtn').addEventListener('click', () => {
       if (poemItems.length) { poemItems.push({ type: 'break' }); renderPoem(); }
     });
@@ -539,22 +554,19 @@ body { background: #F4F3EE; color: var(--text); font-family: 'Lora', Georgia, se
     });
 
     document.getElementById('confirmSaveBtn').addEventListener('click', async () => {
-      const text   = getPoemText();
+      const text = getPoemText();
       const author = document.getElementById('authorInput').value.trim() || 'Anonymous';
       if (!text) return;
 
       const btn = document.getElementById('confirmSaveBtn');
-      btn.textContent = 'posting…';
-      btn.disabled = true;
+      btn.textContent = 'posting…'; btn.disabled = true;
 
       const { error } = await db.from('poems').insert({ text, author });
 
-      btn.textContent = 'post to wall ↗';
-      btn.disabled = false;
+      btn.textContent = 'post to wall ↗'; btn.disabled = false;
 
       if (error) {
-        console.error(error);
-        showToast('something went wrong — try again');
+        showToast('something went wrong');
         return;
       }
 
@@ -565,135 +577,71 @@ body { background: #F4F3EE; color: var(--text); font-family: 'Lora', Georgia, se
     });
 
     /* ── WALL ── */
-    
-
-@keyframes noiseMove {
-  0% { transform: translate(0,0); }
-  50% { transform: translate(-2px, 2px); }
-  100% { transform: translate(0,0); }
-}
-    
-    function esc(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-
-    function fmtDate(ts) {
-      return new Date(ts).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-function redactText(text) {
-  return text.split(" ").map(word => {
-    // keep small/common words more often (optional but improves feel)
-    if (word.length <= 3) return word;
-
-    // 30% chance to redact
-    if (Math.random() < 0.3) {
-      return "████";
-    }
-
-    return word;
-  }).join(" ");
-}
-    function shuffle(arr) {
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-
     async function loadWall() {
-  const masonry = document.getElementById('wallMasonry');
-  const empty   = document.getElementById('wallEmpty');
-  const status  = document.getElementById('wallStatus');
-  const count   = document.getElementById('wallCount');
+      const masonry = document.getElementById('wallMasonry');
+      const empty = document.getElementById('wallEmpty');
+      const status = document.getElementById('wallStatus');
+      const count = document.getElementById('wallCount');
 
-  status.style.display = 'block';
-  masonry.style.display = 'none';
-  empty.style.display = 'none';
-  status.textContent = 'gathering voices…';
+      status.style.display = 'block'; masonry.style.display = 'none'; empty.style.display = 'none';
+      status.textContent = 'gathering voices…';
 
-  const { data, error } = await db.from('poems').select('*').order('id', { ascending: false });
+      const { data, error } = await db.from('poems').select('*').order('id', { ascending: false });
 
-  if (error) {
-    console.error(error);
-    status.textContent = 'failed to load wall';
-    return;
-  }
+      if (error) {
+        status.textContent = 'failed to load wall';
+        return;
+      }
 
-  if (!data || data.length === 0) {
-    status.style.display = 'none';
-    empty.style.display = 'block';
-    count.textContent = '0 poems';
-    return;
-  }
+      if (!data || data.length === 0) {
+        status.style.display = 'none'; empty.style.display = 'block';
+        count.textContent = '0 poems';
+        return;
+      }
 
-  masonry.innerHTML = '';
-  data.forEach(poem => {
-    const card = document.createElement('div');
-    card.className = 'wall-card';
-    const textDiv = document.createElement('div');
-    textDiv.className = 'wall-card-poem';
-    textDiv.textContent = poem.text;
-    const footer = document.createElement('div');
-    footer.className = 'wall-card-footer';
-    const author = document.createElement('span');
-    author.className = 'wall-card-author';
-    author.textContent = poem.author;
-    const date = document.createElement('span');
-    date.className = 'wall-card-date';
-    date.textContent = fmtDate(poem.created_at);
-    footer.appendChild(author);
-    footer.appendChild(date);
-    card.appendChild(textDiv);
-    card.appendChild(footer);
-    masonry.appendChild(card);
-  });
-
-  count.textContent = data.length + (data.length === 1 ? ' poem' : ' poems');
-  status.style.display = 'none';
-  masonry.style.display = 'block';
-}
-<div class="wall-card-poem">${redactText(esc(p.text))}</div>
-<div class="wall-card-footer">
+      masonry.innerHTML = '';
+      data.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'wall-card';
+        card.innerHTML = `
+          <div class="wall-card-poem">${redactText(esc(p.text))}</div>
+          <div class="wall-card-footer">
             <span class="wall-card-author">— ${esc(p.author || 'Anonymous')}</span>
             <span class="wall-card-date">${fmtDate(p.created_at)}</span>
           </div>`;
         masonry.appendChild(card);
       });
-      masonry.style.display = 'block';
+
+      count.textContent = data.length + (data.length === 1 ? ' poem' : ' poems');
+      status.style.display = 'none'; masonry.style.display = 'block';
+    }
+
+    /* ── NOISE CANVAS ── */
+    const canvas = document.getElementById('noiseCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function drawNoise() {
+      const imageData = ctx.createImageData(canvas.width, canvas.height);
+      const buffer = new Uint32Array(imageData.data.buffer);
+      for (let i = 0; i < buffer.length; i++) {
+        // ~4% chance of a white pixel
+        buffer[i] = Math.random() < 0.04 ? 0xFFFFFFFF : 0x00000000;
+      }
+      ctx.putImageData(imageData, 0, 0);
+      requestAnimationFrame(drawNoise);
     }
 
     /* ── INIT ── */
     renderSource();
     renderPoem();
-    
-    const canvas = document.getElementById('noiseCanvas');
-const ctx = canvas.getContext('2d');
-
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
-function drawNoise() {
-  const imageData = ctx.createImageData(canvas.width, canvas.height);
-  const buffer = new Uint32Array(imageData.data.buffer);
-
-  for (let i = 0; i < buffer.length; i++) {
-    const val = Math.random() < 0.04 ? 0xFFFFFFFF : 0x00000000; // ~4% pixels white
-    buffer[i] = val;
-  }
-
-  ctx.putImageData(imageData, 0, 0);
-  requestAnimationFrame(drawNoise);
-}
-
-drawNoise();
-    
+    drawNoise();
   </script>
-  
-  <canvas id="noiseCanvas"></canvas>
 </body>
 </html>
