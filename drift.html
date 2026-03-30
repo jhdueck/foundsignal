@@ -12,7 +12,6 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      /* Adjusted to a cooler, "drifting" slate/stone palette */
       --bg:        #F4F5F7; 
       --bg2:       #EBECEF;
       --bg3:       #E1E3E8;
@@ -21,7 +20,7 @@
       --text3:     #8A8F94;
       --border:    rgba(30,35,40,0.1);
       --border2:   rgba(30,35,40,0.2);
-      --coral:     #4A6D8C; /* Changed accent to a "drift" blue-grey */
+      --coral:     #4A6D8C; 
       --coral-lt:  #EBF1F5;
       --coral-mid: #C8D6E0;
       --rad-md:    6px;
@@ -47,20 +46,24 @@
     html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--text); font-family: 'Lora', Georgia, serif; min-height: 100vh; transition: background 0.5s ease; }
 
-    /* ── DRIFT HOVER EFFECT ── */
+    /* ── INVERTED DRIFT EFFECT ── */
     .drift-effect {
       display: inline-block;
-      transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+      transition: all 0.6s cubic-bezier(0.2, 1, 0.3, 1);
       cursor: default;
       color: var(--coral);
       font-style: italic;
+      filter: blur(3px);
+      opacity: 0.4;
+      letter-spacing: 0.1em;
+      transform: translateY(2px);
     }
     
     .drift-effect:hover {
-      transform: translateY(-4px) translateX(2px);
-      filter: blur(2px);
-      opacity: 0.7;
-      letter-spacing: 0.05em;
+      filter: blur(0px);
+      opacity: 1;
+      letter-spacing: -0.01em;
+      transform: translateY(0px);
     }
 
     .page { display: none; min-height: 100vh; }
@@ -151,8 +154,6 @@
     .modal-input { width: 100%; font-family: 'Lora', serif; font-size: 13px; padding: 8px 12px; border: 0.5px solid var(--border2); border-radius: var(--rad-md); background: var(--bg); color: var(--text); margin-bottom: 1rem; outline: none; }
     .modal-input:focus { border-color: var(--coral); }
     .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .modal-note { font-size: 11px; color: var(--text3); font-style: italic; margin-top: 1rem; line-height: 1.6; }
-
     .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 13px; font-style: italic; padding: 10px 20px; border-radius: var(--rad-md); z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
     .toast.show { opacity: 1; }
 
@@ -194,13 +195,13 @@
       </div>
       <button class="btn-primary" onclick="showPage('machine')">enter the text →</button>
       <button class="btn-ghost" onclick="showPage('wall')">or read what others found</button>
-     <div class="version-links" style="margin-top: 2rem; font-size: 12px; color: var(--text3); text-align: center;">
+
+      <div class="version-links" style="margin-top: 2rem; font-size: 11px; color: var(--text3); text-align: center;">
           Versions: 
           <a href="index.html" style="color: var(--coral); text-decoration: none;">Original</a> | 
-          <a href="drift.html" style="color: var(--coral); text-decoration: none;"><strong>Drift</strong></a> |
+          <a href="drift.html" style="color: var(--coral); text-decoration: none; font-weight: bold;">Drift</a> |
           <a href="noise.html" style="color: var(--coral); text-decoration: none;">Noise</a>
       </div>
-    </div>
     </div>
     <div class="entry-footer">
       <div class="entry-footer-cite">
@@ -295,8 +296,8 @@
       <div class="wall-status" id="wallStatus">gathering voices…</div>
       <div class="wall-masonry" id="wallMasonry" style="display:none;"></div>
       <div class="wall-empty" id="wallEmpty" style="display:none;">
-        No poems yet —<br>be the first to find one inside the text.<br><br>
-        <button class="btn-primary" onclick="showPage('machine')" style="margin-top:0.5rem;">enter the machine →</button>
+        No poems yet —<br>be the first to find one.<br><br>
+        <button class="btn-primary" onclick="showPage('machine')">enter the machine →</button>
       </div>
     </div>
   </div>
@@ -444,6 +445,8 @@
       poemLines.style.fontSize = this.value + 'px';
       document.getElementById('poemSizeVal').textContent = this.value + 'px';
     });
+
+    fadeToggle.addEventListener('change', renderSource);
 
     document.getElementById('saveBtn').addEventListener('click', () => {
       const t = getPoemText();
