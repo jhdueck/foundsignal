@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Found Noise — A Glitched Poetry Machine</title>
-  <meta name="description" content="A found poetry machine built from Project Hail Mary. The signal is drifting into noise.">
+  <title>Found Signal — A Found Poetry Noise Machine</title>
+  <meta name="description" content="A found poetry machine built from Project Hail Mary by Andy Weir. Select words, build a poem, add your voice to the wall.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -12,9 +12,10 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #FAF8F4;
-      --bg2:        #F2EDE5;
-      --bg3:        #EAE3D8;
+      /* Adjusted for a distinct "Paper/Parchment" feel vs a plain white parent page */
+      --bg:        #F5F2EB; 
+      --bg2:       #EBE5D9;
+      --bg3:       #E0D8CB;
       --text:      #1C1713;
       --text2:     #5A5047;
       --text3:     #9C8E81;
@@ -29,9 +30,9 @@
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg:        #1A1612;
-        --bg2:       #231E19;
-        --bg3:       #2C2520;
+        --bg:        #12110F;
+        --bg2:       #1C1916;
+        --bg3:       #26221E;
         --text:      #F0EBE3;
         --text2:     #B0A090;
         --text3:     #6E6055;
@@ -44,31 +45,38 @@
     }
 
     html { scroll-behavior: smooth; }
-    
-    /* NEW: NOISE TEXTURE BACKGROUND */
-    body { 
-      background: var(--bg); 
-      background-image: repeating-radial-gradient(circle at center, var(--border) 0px, transparent 1px);
-      background-size: 4px 4px;
+    body { background: var(--bg); color: var(--text); font-family: 'Lora', Georgia, serif; min-height: 100vh; }
+
+    /* ── REDACTION AESTHETIC ── */
+    .redacted { 
+      background: var(--text); 
       color: var(--text); 
-      font-family: 'Lora', Georgia, serif; 
-      min-height: 100vh; 
+      padding: 0 0.15em; 
+      display: inline-block;
+      line-height: 0.9;
+      transition: background 0.4s ease, color 0.4s ease;
+      cursor: help;
     }
+    .redacted:hover { background: transparent; color: inherit; }
 
     .page { display: none; min-height: 100vh; }
     .page.active { display: flex; flex-direction: column; }
 
     /* ── ENTRY ── */
     #page-entry { align-items: center; justify-content: center; }
+
     .entry-inner {
       width: 100%; max-width: 560px; margin: auto;
       padding: 4rem 2rem 2rem;
       display: flex; flex-direction: column; align-items: center; text-align: center; flex: 1;
     }
+
     .entry-eyebrow { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text3); margin-bottom: 2.5rem; }
+
     .entry-title { font-family: 'Playfair Display', serif; font-size: clamp(40px, 10vw, 64px); font-weight: 400; line-height: 1.05; letter-spacing: -0.01em; margin-bottom: 0.3rem; }
-    .entry-slash { color: var(--coral); font-style: italic; }
+
     .entry-rule { width: 36px; height: 0.5px; background: var(--border2); margin: 2rem auto; }
+
     .entry-verse { font-size: 16px; font-style: italic; line-height: 2.3; color: var(--text2); margin-bottom: 3rem; }
     .entry-verse em { color: var(--coral); font-style: normal; }
 
@@ -89,45 +97,36 @@
 
     /* ── MACHINE ── */
     #page-machine { flex-direction: column; }
+
     .machine-nav { padding: 0.85rem 1.5rem; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; gap: 1rem; background: var(--bg); position: sticky; top: 0; z-index: 10; }
-    .machine-nav-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 400; }
-    .machine-nav-title span { color: var(--coral); font-style: italic; }
+    .machine-nav-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 400; }
+    
     .machine-nav-back, .machine-nav-wall { font-size: 12px; color: var(--text3); background: none; border: none; cursor: pointer; font-family: 'Lora', serif; transition: color 0.2s; }
     .machine-nav-wall { margin-left: auto; font-style: italic; }
     .machine-nav-back:hover, .machine-nav-wall:hover { color: var(--coral); }
 
     .machine-body { flex: 1; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; max-width: 1200px; width: 100%; margin: 0 auto; }
+
     .machine-instruction { font-size: 13px; color: var(--text2); padding: 0.65rem 1rem; border: 0.5px solid var(--border); border-radius: var(--rad-md); background: var(--bg2); line-height: 1.7; text-align: center; }
+
     .resize-hint { font-size: 11px; color: var(--text3); text-align: center; font-style: italic; letter-spacing: 0.03em; }
 
     .machine-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; }
     @media (max-width: 640px) { .machine-cols { grid-template-columns: 1fr !important; } }
 
     .panel-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.6rem; }
+
     .source-box { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--rad-lg); padding: 1.1rem; line-height: 2.1; font-size: 15px; overflow-y: auto; resize: vertical; min-height: 200px; height: 340px; }
+
     .source-citation { display: block; margin-top: 1rem; padding-top: 0.75rem; border-top: 0.5px solid var(--border); font-size: 11px; color: var(--text3); font-style: italic; line-height: 1.6; }
 
-    /* NEW: DRIFT ANIMATION FOR WORDS */
-    @keyframes drift {
-      0% { transform: translate(0,0); }
-      50% { transform: translate(0.5px, 0.5px); }
-      100% { transform: translate(0,0); }
-    }
-
-    .word { 
-      display: inline-block; 
-      cursor: pointer; 
-      border-radius: 3px; 
-      padding: 1px 2px; 
-      transition: background 0.12s, color 0.12s, opacity 0.15s; 
-      animation: drift 4s infinite ease-in-out;
-      animation-delay: var(--delay);
-    }
-    .word:hover { background: var(--coral-mid); color: #3A1A0A; animation-play-state: paused; }
-    .word.selected { background: var(--coral); color: var(--coral-lt); animation: none; transform: none; }
-    .word.faded { opacity: 0.15; filter: blur(0.5px); }
+    .word { display: inline; cursor: pointer; border-radius: 3px; padding: 1px 2px; transition: background 0.12s, color 0.12s, opacity 0.15s; }
+    .word:hover { background: var(--coral-mid); color: #3A1A0A; }
+    .word.selected { background: var(--coral); color: var(--coral-lt); }
+    .word.faded { opacity: 0.2; }
 
     .poem-panel { border: 0.5px solid var(--border); border-radius: var(--rad-lg); padding: 1.1rem; height: 340px; background: var(--bg); display: flex; flex-direction: column; overflow-y: auto; resize: vertical; }
+
     .poem-lines { flex: 1; font-size: 16px; line-height: 2.1; font-style: italic; min-height: 120px; }
     .poem-placeholder { font-size: 14px; color: var(--text3); font-style: italic; margin-top: 1.5rem; text-align: center; line-height: 2; }
     .poem-word { display: inline; cursor: pointer; color: var(--coral); transition: opacity 0.15s; }
@@ -141,6 +140,7 @@
     .btn-sm:hover { background: var(--bg2); color: var(--text); }
     .btn-sm.coral { border-color: var(--coral); color: var(--coral); }
     .btn-sm.coral:hover { background: var(--coral-lt); }
+    .btn-sm:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .size-controls { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 0.5px solid var(--border); }
     .size-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
@@ -157,106 +157,105 @@
     input:checked + .toggle-slider:before { transform: translateX(16px); }
 
     /* ── MODAL ── */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(28,23,19,0.7); z-index: 100; align-items: center; justify-content: center; padding: 1.5rem; backdrop-filter: blur(2px); }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(28,23,19,0.6); z-index: 100; align-items: center; justify-content: center; padding: 1.5rem; }
     .modal-overlay.open { display: flex; }
-    .modal-box { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--rad-lg); padding: 1.75rem; max-width: 400px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+    .modal-box { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--rad-lg); padding: 1.75rem; max-width: 400px; width: 100%; }
     .modal-box h2 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; margin-bottom: 0.25rem; }
     .modal-sub { font-size: 12px; color: var(--text3); font-style: italic; margin-bottom: 1.1rem; }
     .modal-poem-preview { font-size: 14px; font-style: italic; line-height: 2; color: var(--text); background: var(--bg2); padding: 0.85rem 1rem; border-radius: var(--rad-md); margin-bottom: 1.1rem; white-space: pre-line; max-height: 180px; overflow-y: auto; }
     .modal-input { width: 100%; font-family: 'Lora', serif; font-size: 13px; padding: 8px 12px; border: 0.5px solid var(--border2); border-radius: var(--rad-md); background: var(--bg); color: var(--text); margin-bottom: 1rem; outline: none; }
+    .modal-input:focus { border-color: var(--coral); }
     .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .modal-note { font-size: 11px; color: var(--text3); font-style: italic; margin-top: 1rem; line-height: 1.6; }
+
+    /* ── TOAST ── */
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 13px; font-style: italic; padding: 10px 20px; border-radius: var(--rad-md); z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
+    .toast.show { opacity: 1; }
 
     /* ── WALL ── */
     #page-wall { flex-direction: column; }
+
     .wall-header { padding: 1.25rem 1.5rem 1rem; border-bottom: 0.5px solid var(--border); display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; background: var(--bg); position: sticky; top: 0; z-index: 10; }
     .wall-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; }
-    .wall-title span { color: var(--coral); font-style: italic; }
     .wall-count { font-size: 12px; color: var(--text3); font-style: italic; }
     .wall-back { margin-left: auto; font-size: 12px; color: var(--text3); background: none; border: none; font-family: 'Lora', serif; cursor: pointer; transition: color 0.2s; }
     .wall-back:hover { color: var(--coral); }
+
     .wall-source-bar { padding: 0.55rem 1.5rem; background: var(--bg2); border-bottom: 0.5px solid var(--border); font-size: 11px; color: var(--text3); font-style: italic; line-height: 1.6; }
 
     .wall-body { flex: 1; padding: 1.5rem; max-width: 1200px; width: 100%; margin: 0 auto; }
-    .wall-masonry { columns: 3; column-gap: 1.5rem; }
+
+    .wall-toolbar { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
+
+    .wall-masonry { columns: 3; column-gap: 1rem; }
     @media (max-width: 700px) { .wall-masonry { columns: 2; } }
     @media (max-width: 420px) { .wall-masonry { columns: 1; } }
 
-    /* NEW: GLITCHY WALL CARDS */
-    .wall-card { 
-      break-inside: avoid; 
-      background: var(--bg2); 
-      border: 0.5px solid var(--border); 
-      border-radius: var(--rad-md); 
-      padding: 0.9rem 1rem; 
-      margin-bottom: 1.5rem; 
-      transition: transform 0.3s;
-    }
-    .wall-card:nth-child(even) { transform: rotate(-1deg); margin-top: 10px; }
-    .wall-card:nth-child(odd) { transform: rotate(0.8deg); }
-    .wall-card:hover { transform: rotate(0deg) scale(1.02); z-index: 5; }
-
+    .wall-card { break-inside: avoid; background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--rad-md); padding: 0.9rem 1rem; margin-bottom: 1rem; }
     .wall-card-poem { font-size: 14px; font-style: italic; line-height: 2; color: var(--text); white-space: pre-line; margin-bottom: 0.65rem; }
     .wall-card-footer { display: flex; justify-content: space-between; align-items: baseline; border-top: 0.5px solid var(--border); padding-top: 0.5rem; }
     .wall-card-author { font-size: 11px; color: var(--text2); letter-spacing: 0.03em; }
     .wall-card-date { font-size: 10px; color: var(--text3); }
 
-    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 13px; font-style: italic; padding: 10px 20px; border-radius: var(--rad-md); z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-    .toast.show { opacity: 1; }
+    .wall-status { text-align: center; padding: 3rem; font-size: 13px; color: var(--text3); font-style: italic; }
+    .wall-empty { text-align: center; padding: 4rem 1rem; font-size: 15px; color: var(--text3); font-style: italic; line-height: 2.4; }
   </style>
 </head>
 <body>
 
   <div class="page active" id="page-entry">
     <div class="entry-inner">
-      <div class="entry-eyebrow">A glitched poetry machine</div>
-      <div class="entry-title">Found <span class="entry-slash">Noise</span></div>
+      <div class="entry-eyebrow">A found poetry machine</div>
+      <div class="entry-title">Found <span class="redacted">Signal</span></div>
       <div class="entry-rule"></div>
       <div class="entry-verse">
         somewhere in this data<br>
-        was a <em>glitch</em><br>
-        a pattern dissolving in noise<br>
+        was a <em>pattern</em><br>
+        a signal buried in noise<br>
         <br>
-        what is left<br>
-        when the signal fades?
+        what do you hear<br>
+        when you listen?
       </div>
-      <button class="btn-primary" onclick="showPage('machine')">enter the noise →</button>
-      <button class="btn-ghost" onclick="showPage('wall')">or read the interference</button>
-      
-      <div class="version-links" style="margin-top: 2.5rem; font-size: 11px; color: var(--text3); text-align: center; letter-spacing: 0.05em;">
-        VERSIONS: 
-        <a href="foundsignal.html" style="color: var(--text3); text-decoration: none; border-bottom: 1px solid var(--border);">Original</a> &nbsp;|&nbsp; 
-        <a href="drift.html" style="color: var(--text3); text-decoration: none; border-bottom: 1px solid var(--border);">Drift</a> &nbsp;|&nbsp; 
-        <span style="color: var(--coral); font-weight: bold;">Noise</span>
-      </div>
+      <button class="btn-primary" onclick="showPage('machine')">enter the text →</button>
+      <button class="btn-ghost" onclick="showPage('wall')">or read what others found</button>
     </div>
     <div class="entry-footer">
-      <div class="entry-footer-cite">Source: Weir, A. (2021). <em>Project Hail Mary.</em></div>
-      <div class="entry-footer-theory">Signal-to-noise ratio: 0.34</div>
+      <div class="entry-footer-cite">
+        Source: Weir, A. (2021).<br>
+        <em>Project Hail Mary.</em> Ballantine Books. p. 47.
+      </div>
+      <div class="entry-footer-theory">
+        After Hocks (2003) &amp; Bolter (2001)<br>
+        on visual rhetoric &amp; remediation
+      </div>
     </div>
   </div>
+
 
   <div class="page" id="page-machine">
     <div class="machine-nav">
       <button class="machine-nav-back" onclick="showPage('entry')">← entry</button>
-      <div class="wall-title">Found <span>Noise</span></div>
+      <div class="machine-nav-title">Found <span class="redacted">Noise</span></div>
       <button class="machine-nav-wall" onclick="showPage('wall')">view the wall →</button>
     </div>
 
     <div class="machine-body">
       <div class="machine-instruction">
-        The text is unstable. Sift through the interference to find the remaining words. Your spatial choices will be preserved on the wall, though some clarity may be lost.
+        Select words from the source text to build your poem. Click a word to add it — click it again in the poem to remove it. Use the sliders to reshape the space. When you're done, save your poem to the shared wall.
       </div>
+      <div class="resize-hint">your spatial choices are part of the poem — drag panel edges or use the sliders below</div>
 
       <div class="machine-cols" id="machineCols">
+
         <div>
-          <div class="panel-label">Source interference</div>
+          <div class="panel-label">Source text</div>
           <div class="source-box" id="sourceBox"></div>
           <div class="toggle-wrap">
             <label class="toggle-switch">
-              <input type="checkbox" id="fadeToggle" checked>
+              <input type="checkbox" id="fadeToggle">
               <span class="toggle-slider"></span>
             </label>
-            <span>Submerge unselected words</span>
+            <span>Fade unselected words</span>
           </div>
           <div class="size-controls">
             <div class="size-row">
@@ -264,20 +263,27 @@
               <input type="range" min="25" max="75" value="50" step="1" id="colWidth">
               <span class="size-val" id="colWidthVal">50%</span>
             </div>
+            <div class="size-row">
+              <span class="size-label">Text size</span>
+              <input type="range" min="11" max="22" value="15" step="1" id="srcSize">
+              <span class="size-val" id="srcSizeVal">15px</span>
+            </div>
           </div>
         </div>
 
         <div>
-          <div class="panel-label">Extracted signal</div>
+          <div class="panel-label">Your found poem</div>
           <div class="poem-panel">
             <div class="poem-lines" id="poemLines">
-              <div class="poem-placeholder" id="poemPlaceholder">Listening for rhythm...</div>
+              <div class="poem-placeholder" id="poemPlaceholder">
+                The poem is waiting<br>inside the text —<br>touch a word to begin.
+              </div>
             </div>
             <div class="word-count" id="wordCount"></div>
             <div class="poem-controls">
               <button class="btn-sm" id="breakBtn">↵ line break</button>
               <button class="btn-sm" id="clearBtn">clear</button>
-              <button class="btn-sm coral" id="saveBtn">post to wall ↗</button>
+              <button class="btn-sm coral" id="saveBtn">save to wall ↗</button>
             </div>
           </div>
           <div class="size-controls">
@@ -288,44 +294,65 @@
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </div>
 
+
   <div class="page" id="page-wall">
     <div class="wall-header">
-      <div class="wall-title">Found <span>Noise</span></div>
+      <div class="wall-title">Found <span class="redacted">Signal</span></div>
       <div class="wall-count" id="wallCount"></div>
-      <button class="wall-back" onclick="showPage('entry')">← back</button>
+      <button class="wall-back" onclick="showPage('entry')">← back to entry</button>
     </div>
     <div class="wall-source-bar">
-      Fragments from the void. Every message is subject to entropy.
+    All poems, partially obscured — signal drifting into noise. Words remain, but not all of them.
     </div>
     <div class="wall-body">
-      <div class="wall-status" id="wallStatus">tuning frequencies...</div>
+      <div class="wall-toolbar">
+        <button class="btn-ghost" onclick="loadWall()">↻ refresh wall</button>
+      </div>
+      <div class="wall-status" id="wallStatus">gathering voices…</div>
       <div class="wall-masonry" id="wallMasonry" style="display:none;"></div>
+      <div class="wall-empty" id="wallEmpty" style="display:none;">
+        No poems yet —<br>be the first to find one inside the text.<br><br>
+        <button class="btn-primary" onclick="showPage('machine')" style="margin-top:0.5rem;">enter the machine →</button>
+      </div>
     </div>
   </div>
 
+
   <div class="modal-overlay" id="saveModal">
     <div class="modal-box">
-      <h2>Commit to the wall</h2>
+      <h2>Save to the wall</h2>
+      <div class="modal-sub">Your poem will appear on the shared wall for all readers.</div>
       <div class="modal-poem-preview" id="modalPreview"></div>
-      <input class="modal-input" id="authorInput" placeholder="Name or identifier" maxlength="40">
+      <input class="modal-input" id="authorInput" placeholder="Your name — or leave blank for Anonymous" maxlength="40">
       <div class="modal-actions">
-        <button class="btn-sm coral" id="confirmSaveBtn">post signal</button>
+        <button class="btn-sm coral" id="confirmSaveBtn">post to wall ↗</button>
         <button class="btn-sm" id="cancelSaveBtn">cancel</button>
+      </div>
+      <div class="modal-note">
+        By posting you agree your poem may be displayed publicly as part of this project.
+        The source text remains © Andy Weir / Ballantine Books.
       </div>
     </div>
   </div>
 
   <div class="toast" id="toast"></div>
 
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    /* ── SUPABASE CLIENT ── */
     const { createClient } = supabase;
-    const db = createClient('https://ymgqfhgekpzdeuzokznr.supabase.co', 'sb_publishable_kvgcGdkEMMhuBq7VQhKkhw_ji23s6lp');
+    const db = createClient(
+      'https://ymgqfhgekpzdeuzokznr.supabase.co',
+      'sb_publishable_kvgcGdkEMMhuBq7VQhKkhw_ji23s6lp'
+    );
 
+    /* ── TOAST ── */
     function showToast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
@@ -333,6 +360,7 @@
       setTimeout(() => t.classList.remove('show'), 2800);
     }
 
+    /* ── PAGE NAV ── */
     function showPage(id) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('page-' + id).classList.add('active');
@@ -340,17 +368,19 @@
       if (id === 'wall') loadWall();
     }
 
+    /* ── SOURCE TEXT ── */
     const SOURCE = `Something poked at my brain. A feeling. A sense that something wasn't right. I couldn't put my finger on it. Maybe I was just tired. I'd been working for fourteen hours straight trying to figure out why the Astrophage breeding rate had increased. I checked my math again. And again. Was I the only one who noticed? Probably not. But I might be the only one who cared enough to lose sleep over it. I leaned back in my chair and stared at the ceiling. Somewhere in this data was a pattern. A signal buried in noise. That's all science is, really. Listening for the signal. Filtering out everything else. The universe is not required to make sense to you. It just sits there, massive and indifferent, waiting for you to catch up. But if you listen — really listen — something answers back. Not in words. Not in anything so simple. In pattern. In rhythm. In the way two things that have no reason to match somehow do. That's what keeps me awake. Not the fear of being wrong. The fear of missing it.`;
-    
+    const CITATION = 'Weir, A. (2021). Project Hail Mary. Ballantine Books. p. 47.';
+
     const tokens = SOURCE.split(/(\s+)/).filter(Boolean);
-    let selected = [];
+    let selected  = [];
     let poemItems = [];
 
-    const sourceBox = document.getElementById('sourceBox');
-    const poemLines = document.getElementById('poemLines');
+    const sourceBox   = document.getElementById('sourceBox');
+    const poemLines   = document.getElementById('poemLines');
     const placeholder = document.getElementById('poemPlaceholder');
-    const wordCount = document.getElementById('wordCount');
-    const fadeToggle = document.getElementById('fadeToggle');
+    const wordCount   = document.getElementById('wordCount');
+    const fadeToggle  = document.getElementById('fadeToggle');
 
     function renderSource() {
       sourceBox.innerHTML = '';
@@ -361,23 +391,23 @@
           const sp = document.createElement('span');
           sp.className = 'word';
           sp.textContent = tok;
-          // Assign random delay for the drift animation
-          sp.style.setProperty('--delay', (Math.random() * 5) + 's');
-          
-          if (selected.includes(i)) sp.classList.add('selected');
-          if (fadeToggle.checked && !selected.includes(i)) sp.classList.add('faded');
-          
+          if (selected.includes(i))                          sp.classList.add('selected');
+          if (fadeToggle.checked && !selected.includes(i))   sp.classList.add('faded');
           sp.addEventListener('click', () => toggleWord(i, tok.replace(/[^a-zA-Z0-9'''\-]/g, '')));
           sourceBox.appendChild(sp);
         }
       });
+      const cite = document.createElement('span');
+      cite.className = 'source-citation';
+      cite.textContent = CITATION;
+      sourceBox.appendChild(cite);
     }
 
     function toggleWord(idx, clean) {
       if (!clean) return;
       if (selected.includes(idx)) {
-        selected = selected.filter(s => s !== idx);
-        poemItems = poemItems.filter(p => !(p.type === 'word' && p.idx === idx));
+        selected   = selected.filter(s => s !== idx);
+        poemItems  = poemItems.filter(p => !(p.type === 'word' && p.idx === idx));
       } else {
         selected.push(idx);
         poemItems.push({ type: 'word', idx, text: clean });
@@ -404,8 +434,9 @@
           const sp = document.createElement('span');
           sp.className = 'poem-word';
           sp.textContent = item.text + ' ';
+          sp.title = 'click to remove';
           sp.addEventListener('click', () => {
-            selected = selected.filter(s => s !== item.idx);
+            selected  = selected.filter(s => s !== item.idx);
             poemItems.splice(pi, 1);
             renderSource();
             renderPoem();
@@ -414,71 +445,155 @@
         }
       });
       const wc = poemItems.filter(p => p.type === 'word').length;
-      wordCount.textContent = wc + ' units found';
+      wordCount.textContent = wc + (wc === 1 ? ' word found' : ' words found');
     }
 
     function getPoemText() {
-      return poemItems.map(item => item.type === 'break' ? '\n' : item.text).join(' ').replace(/\s\n\s/g, '\n').trim();
+      let t = '';
+      poemItems.forEach(item => {
+        if (item.type === 'break') t += '\n';
+        else t += item.text + ' ';
+      });
+      return t.trim();
     }
 
-    document.getElementById('breakBtn').addEventListener('click', () => { if (poemItems.length) { poemItems.push({ type: 'break' }); renderPoem(); } });
-    document.getElementById('clearBtn').addEventListener('click', () => { selected = []; poemItems = []; renderSource(); renderPoem(); });
+    /* ── MACHINE CONTROLS ── */
+    document.getElementById('breakBtn').addEventListener('click', () => {
+      if (poemItems.length) { poemItems.push({ type: 'break' }); renderPoem(); }
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      selected = []; poemItems = []; renderSource(); renderPoem();
+    });
+
     document.getElementById('colWidth').addEventListener('input', function() {
       const v = parseInt(this.value);
       document.getElementById('machineCols').style.gridTemplateColumns = v + 'fr ' + (100 - v) + 'fr';
       document.getElementById('colWidthVal').textContent = v + '%';
     });
+
+    document.getElementById('srcSize').addEventListener('input', function() {
+      sourceBox.style.fontSize = this.value + 'px';
+      document.getElementById('srcSizeVal').textContent = this.value + 'px';
+    });
+
     document.getElementById('poemSize').addEventListener('input', function() {
       poemLines.style.fontSize = this.value + 'px';
+      document.getElementById('poemSizeVal').textContent = this.value + 'px';
     });
+
     fadeToggle.addEventListener('change', renderSource);
 
+    /* ── SAVE MODAL ── */
     document.getElementById('saveBtn').addEventListener('click', () => {
       const t = getPoemText();
-      if (!t) { showToast('nothing found yet'); return; }
+      if (!t) { showToast('select some words first'); return; }
       document.getElementById('modalPreview').textContent = t;
+      document.getElementById('authorInput').value = '';
       document.getElementById('saveModal').classList.add('open');
     });
 
-    document.getElementById('cancelSaveBtn').addEventListener('click', () => document.getElementById('saveModal').classList.remove('open'));
-
-    document.getElementById('confirmSaveBtn').addEventListener('click', async () => {
-      const text = getPoemText();
-      const author = document.getElementById('authorInput').value.trim() || 'Anonymous';
-      const btn = document.getElementById('confirmSaveBtn');
-      btn.disabled = true;
-      const { error } = await db.from('poems').insert({ text, author });
-      if (!error) {
-        document.getElementById('saveModal').classList.remove('open');
-        selected = []; poemItems = []; renderSource(); renderPoem();
-        showPage('wall');
-      }
-      btn.disabled = false;
+    document.getElementById('cancelSaveBtn').addEventListener('click', () => {
+      document.getElementById('saveModal').classList.remove('open');
     });
 
+    document.getElementById('confirmSaveBtn').addEventListener('click', async () => {
+      const text   = getPoemText();
+      const author = document.getElementById('authorInput').value.trim() || 'Anonymous';
+      if (!text) return;
+
+      const btn = document.getElementById('confirmSaveBtn');
+      btn.textContent = 'posting…';
+      btn.disabled = true;
+
+      const { error } = await db.from('poems').insert({ text, author });
+
+      btn.textContent = 'post to wall ↗';
+      btn.disabled = false;
+
+      if (error) {
+        console.error(error);
+        showToast('something went wrong — try again');
+        return;
+      }
+
+      document.getElementById('saveModal').classList.remove('open');
+      selected = []; poemItems = []; renderSource(); renderPoem();
+      showToast('your poem is on the wall');
+      showPage('wall');
+    });
+
+    /* ── WALL ── */
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function fmtDate(ts) {
+      return new Date(ts).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
     function redactText(text) {
-      return text.split(" ").map(word => (word.length > 3 && Math.random() < 0.25) ? "████" : word).join(" ");
+      return text.split(" ").map(word => {
+        if (word.length <= 3) return word;
+        if (Math.random() < 0.3) {
+          return "████";
+        }
+        return word;
+      }).join(" ");
+    }
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
     }
 
     async function loadWall() {
       const masonry = document.getElementById('wallMasonry');
-      const status = document.getElementById('wallStatus');
-      const count = document.getElementById('wallCount');
-      const { data, error } = await db.from('poems').select('*').order('created_at', { ascending: false });
-      if (error) return;
+      const empty   = document.getElementById('wallEmpty');
+      const status  = document.getElementById('wallStatus');
+      const count   = document.getElementById('wallCount');
+
+      status.style.display  = 'block';
+      status.textContent    = 'gathering voices…';
+      masonry.style.display = 'none';
+      empty.style.display   = 'none';
+
+      const { data, error } = await db
+        .from('poems')
+        .select('id, text, author, created_at')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        status.textContent = 'could not load poems — try refreshing';
+        console.error(error);
+        return;
+      }
+
       status.style.display = 'none';
-      count.textContent = data.length + ' signals';
+
+      /* shuffle so each visitor sees a different order */
+      const poems = shuffle(data || []);
+      count.textContent = poems.length + (poems.length === 1 ? ' poem found' : ' poems found');
+
+      if (poems.length === 0) { empty.style.display = 'block'; return; }
+
       masonry.innerHTML = '';
-      data.forEach(p => {
+      poems.forEach(p => {
         const card = document.createElement('div');
         card.className = 'wall-card';
-        card.innerHTML = `<div class="wall-card-poem">${redactText(p.text)}</div>
-          <div class="wall-card-footer"><span class="wall-card-author">— ${p.author}</span></div>`;
+        card.innerHTML = `
+        <div class="wall-card-poem">${redactText(esc(p.text))}</div>
+        <div class="wall-card-footer">
+          <span class="wall-card-author">— ${esc(p.author || 'Anonymous')}</span>
+          <span class="wall-card-date">${fmtDate(p.created_at)}</span>
+        </div>`;
         masonry.appendChild(card);
       });
       masonry.style.display = 'block';
     }
 
+    /* ── INIT ── */
     renderSource();
     renderPoem();
   </script>
